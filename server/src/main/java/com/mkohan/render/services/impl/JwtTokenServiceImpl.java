@@ -1,5 +1,6 @@
 package com.mkohan.render.services.impl;
 
+import com.mkohan.render.entities.User;
 import com.mkohan.render.services.JwtTokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -19,9 +20,9 @@ public class JwtTokenServiceImpl implements JwtTokenService {
     private static final Key JWT_SECRET = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     @Override
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(User user) {
         return Jwts.builder()
-                .setSubject(userDetails.getUsername())
+                .setSubject(user.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
                 .signWith(JWT_SECRET)
