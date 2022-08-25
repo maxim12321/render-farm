@@ -12,3 +12,8 @@ spring:
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog.xml
+
+tasks:
+  duration:
+    min: 5
+    max: 10
