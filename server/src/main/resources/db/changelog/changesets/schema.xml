@@ -39,4 +39,10 @@
         <createSequence sequenceName="hibernate_sequence" startValue="1"/>
     </changeSet>
 
+    <changeSet id="make-username-unique" author="mkohan">
+        <addUniqueConstraint tableName="users"
+                             columnNames="username"
+                             constraintName="unique_username"/>
+    </changeSet>
+
 </databaseChangeLog>

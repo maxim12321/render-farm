@@ -2,6 +2,7 @@ package com.mkohan.render.configs;
 
 import com.mkohan.render.dtos.ErrorDto;
 import com.mkohan.render.exceptions.BadCredentialsException;
+import com.mkohan.render.exceptions.UsernameAlreadyExistsException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,12 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = {BadCredentialsException.class, UsernameNotFoundException.class})
     @ResponseStatus(value = HttpStatus.FORBIDDEN)
     public ErrorDto handleBadCredentialsException(RuntimeException e) {
+        return new ErrorDto(e.getMessage());
+    }
+
+    @ExceptionHandler(value = {UsernameAlreadyExistsException.class})
+    @ResponseStatus(value = HttpStatus.CONFLICT)
+    public ErrorDto handleUsernameAlreadyExistsException(UsernameAlreadyExistsException e) {
         return new ErrorDto(e.getMessage());
     }
 
