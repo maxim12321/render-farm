@@ -1,16 +1,18 @@
 package com.mkohan.render.services.impl;
 
 import com.mkohan.render.entities.User;
-import com.mkohan.render.exceptions.BadCredentialsException;
+import com.mkohan.render.exceptions.IncorrectCredentialsException;
 import com.mkohan.render.exceptions.UsernameAlreadyExistsException;
 import com.mkohan.render.repositories.UserRepository;
 import com.mkohan.render.services.AuthenticationService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -32,12 +34,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         try {
             authenticationManager.authenticate(authenticationToken);
-        } catch (org.springframework.security.authentication.BadCredentialsException e) {
-            throw new BadCredentialsException();
+        } catch (BadCredentialsException e) {
+            throw new IncorrectCredentialsException();
         }
 
         return userRepository.findByUsername(username)
-                .orElseThrow(BadCredentialsException::new);
+                .orElseThrow(IncorrectCredentialsException::new);
     }
 
     @Override
@@ -46,7 +48,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         signUpLock.lock();
         try {
-            if (userRepository.findByUsername(username).isPresent()) {
+            final Optional<User> byUsername = userRepository.findByUsername(username);
+            if (byUsername.isPresent()) {
                 throw new UsernameAlreadyExistsException();
             }
             userRepository.saveAndFlush(user);
