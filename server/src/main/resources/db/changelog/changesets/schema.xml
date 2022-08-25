@@ -20,6 +20,21 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="task-table" author="mkohan">
+        <createTable tableName="tasks">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" primaryKeyName="pk_task"/>
+            </column>
+            <column name="submitter_id" type="bigint">
+                <constraints nullable="false" references="users(id)" foreignKeyName="fk_task_user"/>
+            </column>
+            <column name="submitted_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="completed_at" type="timestamp"/>
+        </createTable>
+    </changeSet>
+
     <changeSet id="hibernate-sequence" author="mkohan">
         <createSequence sequenceName="hibernate_sequence" startValue="1"/>
     </changeSet>
