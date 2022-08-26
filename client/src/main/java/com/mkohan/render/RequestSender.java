@@ -3,7 +3,6 @@ package com.mkohan.render;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mkohan.render.dtos.AuthenticationRequest;
 import com.mkohan.render.dtos.ErrorDto;
 
 import java.net.URI;
@@ -20,27 +19,27 @@ public class RequestSender {
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
-    public void signUp(String username, String password) {
-        final AuthenticationRequest request = new AuthenticationRequest(username, password);
-        sendPostRequestPlain("/sign_up", request);
+    public <T> Optional<T> sendGetRequest(String endpoint, Object requestBody, String token, TypeReference<T> type) {
+        return sendRequest(endpoint, false, requestBody, token, type);
     }
 
-    public Optional<String> login(String username, String password) {
-        final AuthenticationRequest request = new AuthenticationRequest(username, password);
-        return sendPostRequestPlain("/login", request);
-    }
-
-    private Optional<String> sendPostRequestPlain(String endpoint, Object requestBody) {
+    public Optional<String> sendPostRequestPlain(String endpoint, Object requestBody) {
         return sendPostRequestPlain(endpoint, requestBody, null);
     }
 
-    private Optional<String> sendPostRequestPlain(String endpoint, Object requestBody, String token) {
-        try {
-            String requestBodyJson = objectMapper.writeValueAsString(requestBody);
+    public Optional<String> sendPostRequestPlain(String endpoint, Object requestBody, String token) {
+        return sendRequestPlain(endpoint, true, requestBody, token);
+    }
 
+    private Optional<String> sendRequestPlain(String endpoint, boolean isPost, Object requestBody, String token) {
+        try {
             final HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(HOST_URI.resolve(endpoint))
-                    .POST(HttpRequest.BodyPublishers.ofString(requestBodyJson))
                     .header("Content-Type", "application/json");
+
+            if (isPost) {
+                String requestBodyJson = requestBody == null ? "" : objectMapper.writeValueAsString(requestBody);
+                requestBuilder.POST(HttpRequest.BodyPublishers.ofString(requestBodyJson));
+            }
 
             if (token != null) {
                 requestBuilder.header("Authorization", "Bearer " + token);
@@ -65,12 +64,8 @@ public class RequestSender {
         return Optional.empty();
     }
 
-    private <T> Optional<T> sendPostRequest(String endpoint, Object requestBody, TypeReference<T> type) {
-        return sendPostRequest(endpoint, requestBody, type, null);
-    }
-
-    private <T> Optional<T> sendPostRequest(String endpoint, Object requestBody, TypeReference<T> type, String token) {
-        final Optional<String> response = sendPostRequestPlain(endpoint, requestBody, token);
+    private <T> Optional<T> sendRequest(String endpoint, boolean isPost, Object requestBody, String token, TypeReference<T> type) {
+        final Optional<String> response = sendRequestPlain(endpoint, isPost, requestBody, token);
         if (response.isEmpty()) {
             return Optional.empty();
         }
