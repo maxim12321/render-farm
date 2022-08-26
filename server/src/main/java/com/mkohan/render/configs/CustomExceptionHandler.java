@@ -1,8 +1,8 @@
 package com.mkohan.render.configs;
 
 import com.mkohan.render.dtos.ErrorDto;
-import com.mkohan.render.exceptions.IncorrectCredentialsException;
 import com.mkohan.render.exceptions.EntityNotFoundException;
+import com.mkohan.render.exceptions.IncorrectCredentialsException;
 import com.mkohan.render.exceptions.UsernameAlreadyExistsException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
