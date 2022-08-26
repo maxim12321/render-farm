@@ -15,5 +15,5 @@ spring:
 
 tasks:
   duration:
-    min: 5
-    max: 10
+    min: 60
+    max: 300
