@@ -5,6 +5,7 @@ import com.mkohan.render.dtos.AuthenticationRequest;
 import com.mkohan.render.dtos.TaskDto;
 
 import java.util.List;
+import java.util.Optional;
 
 public class RenderFarmApi {
 
@@ -12,17 +13,19 @@ public class RenderFarmApi {
 
     private String activeToken;
 
-    public void signUp(String username, String password) {
+    public boolean signUp(String username, String password) {
         final AuthenticationRequest request = new AuthenticationRequest(username, password);
 
-        requestSender.sendPostRequestPlain("/sign_up", request);
+        return requestSender.sendPostRequestPlain("/sign_up", request).isPresent();
     }
 
-    public void login(String username, String password) {
+    public boolean login(String username, String password) {
         final AuthenticationRequest request = new AuthenticationRequest(username, password);
 
         activeToken = requestSender.sendPostRequestPlain("/login", request)
                 .orElse(null);
+
+        return activeToken != null;
     }
 
     public void logout() {
@@ -34,7 +37,13 @@ public class RenderFarmApi {
         }).orElse(List.of());
     }
 
-    public void postTask() {
-        requestSender.sendPostRequestPlain("/tasks", null, activeToken);
+    public Optional<TaskDto> getTaskById(long taskId) {
+        return requestSender.sendGetRequest("/tasks/" + taskId, null, activeToken, new TypeReference<>() {
+        });
+    }
+
+    public boolean submitTask() {
+        return requestSender.sendPostRequestPlain("/tasks", null, activeToken)
+                .isPresent();
     }
 }

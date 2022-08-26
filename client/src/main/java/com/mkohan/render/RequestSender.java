@@ -51,8 +51,12 @@ public class RequestSender {
             );
 
             if (response.statusCode() < 200 || response.statusCode() > 299) {
-                String error = objectMapper.readValue(response.body(), ErrorDto.class).getMessage();
-                System.out.println(response.statusCode() + ": " + error);
+                String error = "";
+                if (!response.body().isEmpty()) {
+                    error = ": " + objectMapper.readValue(response.body(), ErrorDto.class).getMessage();
+                }
+
+                System.out.println(response.statusCode() + " error" + error);
                 return Optional.empty();
             }
 

@@ -26,7 +26,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(value = {EntityNotFoundException.class})
-    @ResponseStatus(value = HttpStatus.FORBIDDEN)
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public ErrorDto handleEntityNotFoundException(EntityNotFoundException e) {
         return new ErrorDto(e.getMessage());
     }
