@@ -7,6 +7,7 @@ import com.mkohan.render.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,9 +27,15 @@ public class TaskController {
     public List<TaskDto> getAllUserTasks(Authentication authentication) {
         User user = userService.getByUsername(authentication.getName());
 
-        return taskService.getByUser(user).stream()
+        return taskService.getAllByUser(user).stream()
                 .map(TaskDto::new)
                 .collect(Collectors.toList());
+    }
+
+    @GetMapping("/{taskId}")
+    public TaskDto getTaskById(@PathVariable long taskId, Authentication authentication) {
+        User user = userService.getByUsername(authentication.getName());
+        return new TaskDto(taskService.getByUserAndId(user, taskId));
     }
 
     @PostMapping

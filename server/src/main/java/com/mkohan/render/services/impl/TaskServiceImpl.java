@@ -2,6 +2,7 @@ package com.mkohan.render.services.impl;
 
 import com.mkohan.render.entities.Task;
 import com.mkohan.render.entities.User;
+import com.mkohan.render.exceptions.TaskNotFoundException;
 import com.mkohan.render.repositories.TaskRepository;
 import com.mkohan.render.services.TaskService;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,8 +35,15 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Task> getByUser(User user) {
+    public List<Task> getAllByUser(User user) {
         return taskRepository.findBySubmitter(user);
+    }
+
+    @Override
+    public Task getByUserAndId(User user, long taskId) {
+        return taskRepository.findById(taskId)
+                .filter(task -> task.getSubmitter().equals(user))
+                .orElseThrow(TaskNotFoundException::new);
     }
 
     @Override
